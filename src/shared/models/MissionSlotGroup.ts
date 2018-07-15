@@ -6,7 +6,7 @@ import {
     HasMany,
     HasManyCreateAssociationMixin,
     HasManyGetAssociationsMixin,
-    HasManyRemoveAssociationMixin,
+    HasManyRemoveAssociationMixin, HasOne,
     Model
 } from 'sequelize';
 import { Attribute, Options } from 'sequelize-decorators';
@@ -43,6 +43,7 @@ export class MissionSlotGroup extends Model {
     public static associations: {
         mission: BelongsTo;
         slots: HasMany;
+        parentGroup: HasOne;
     };
 
     //////////////////////
@@ -64,6 +65,33 @@ export class MissionSlotGroup extends Model {
     public uid: string;
 
     /**
+     * Eager-loaded parent group instance.
+     * Only included if it has been eager-loaded via sequelize
+     *
+     * @type {(MissionSlotGroup | undefined)}
+     * @memberof MissionSlotGroup
+     */
+    public parentGroup?: MissionSlotGroup;
+
+    /**
+     * UID of the parent slotGroup
+     *
+     * @type {string}
+     * @memberof MissionSlotGroup
+     */
+    @Attribute({
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: MissionSlotGroup,
+            key: 'uid'
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+    })
+    public parentGroupUid: string | null;
+
+    /**
      * Title of the mission slot group
      *
      * @type {string}
@@ -77,6 +105,55 @@ export class MissionSlotGroup extends Model {
         }
     })
     public title: string;
+
+    /**
+     * Radio frequency this unit uses for comms (in MHz)
+     * @type {number}
+     * @memberOf MissionSlotGroup
+     */
+    @Attribute({
+        type: DataTypes.DOUBLE,
+        allowNull: true,
+        validate: {
+            min: 0
+        }
+    })
+    public radioFrequency: number | null;
+
+    /**
+     * Tactical symbol
+     * @type {string}
+     * @memberOf MissionSlotGroup
+     */
+    @Attribute({
+        type: DataTypes.ENUM,
+        values: ['inf'],
+        allowNull: true
+    })
+    public tacticalSymbol: string | null;
+
+    /**
+     * Vehicle (if any)
+     * @type {string}
+     * @memberOf MissionSlotGroup
+     */
+    @Attribute({
+        type: DataTypes.STRING,
+        allowNull: true
+    })
+    public vehicle: string | null;
+
+    /**
+     * Minimum number of assigned slots for this unit to be open for slotting.
+     * @type {number}
+     * @memberOf MissionSlotGroup
+     */
+    @Attribute({
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0
+    })
+    public minSlottedPlayerCount: number;
 
     /**
      * Order number for sorting group in slotlist
@@ -239,8 +316,13 @@ export class MissionSlotGroup extends Model {
 
         return {
             uid: this.uid,
+            parentGroupUid: this.parentGroupUid,
             missionUid: this.missionUid,
             title: this.title,
+            radioFrequency: this.radioFrequency,
+            tacticalSymbol: this.tacticalSymbol,
+            vehicle: this.vehicle,
+            minSlottedPlayerCount: this.minSlottedPlayerCount,
             orderNumber: this.orderNumber,
             description: _.isNil(this.description) ? null : this.description,
             slots: _.orderBy(publicSlots, ['orderNumber', (s: IPublicMissionSlot) => { return s.title.toUpperCase(); }], ['asc', 'asc'])
@@ -260,8 +342,13 @@ export class MissionSlotGroup extends Model {
  */
 export interface IPublicMissionSlotGroup {
     uid: string;
+    parentGroupUid: string | null;
     missionUid: string;
     title: string;
+    radioFrequency: number | null;
+    tacticalSymbol: string | null;
+    vehicle: string | null;
+    minSlottedPlayerCount: number;
     orderNumber: number;
     description: string | null;
     slots: IPublicMissionSlot[];

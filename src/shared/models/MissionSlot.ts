@@ -95,6 +95,18 @@ export class MissionSlot extends Model {
     public title: string;
 
     /**
+     * Minimum number of assigned slots for this slot to be open for slotting.
+     * @type {number}
+     * @memberOf MissionSlot
+     */
+    @Attribute({
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0
+    })
+    public minSlottedPlayerCount: number;
+
+    /**
      * Order number for sorting slots within a slot group
      *
      * @type {number}
@@ -505,6 +517,7 @@ export class MissionSlot extends Model {
             uid: this.uid,
             slotGroupUid: this.slotGroupUid,
             title: this.title,
+            minSlottedPlayerCount: this.minSlottedPlayerCount,
             orderNumber: this.orderNumber,
             difficulty: this.difficulty,
             description: _.isNil(this.description) ? null : this.description,
@@ -535,6 +548,7 @@ export interface IPublicMissionSlot {
     uid: string;
     slotGroupUid: string;
     title: string;
+    minSlottedPlayerCount: number;
     orderNumber: number;
     difficulty: number;
     detailedDescription: string | null;
@@ -559,6 +573,7 @@ export interface IPublicMissionSlot {
 export interface IMissionSlotCreatePayload {
     slotGroupUid: string;
     title: string;
+    minSlottedPlayerCount?: number;
     orderNumber: number;
     difficulty: number;
     detailedDescription: string | null;
