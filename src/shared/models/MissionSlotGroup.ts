@@ -13,6 +13,7 @@ import { Attribute, Options } from 'sequelize-decorators';
 
 import sequelize from '../util/sequelize';
 
+import {tacticalSymbols} from '../types/tacticalSymbol';
 import { Mission } from './Mission';
 import { IPublicMissionSlot, MissionSlot } from './MissionSlot';
 
@@ -36,7 +37,8 @@ export class MissionSlotGroup extends Model {
      * @static
      * @type {{
      *         mission: BelongsTo,
-     *         slots: HasMany
+     *         slots: HasMany,
+     *         parentGroup: HasOne
      *     }}
      * @memberof MissionSlotGroup
      */
@@ -82,6 +84,7 @@ export class MissionSlotGroup extends Model {
     @Attribute({
         type: DataTypes.UUID,
         allowNull: true,
+        defaultValue: null,
         references: {
             model: MissionSlotGroup,
             key: 'uid'
@@ -107,18 +110,16 @@ export class MissionSlotGroup extends Model {
     public title: string;
 
     /**
-     * Radio frequency this unit uses for comms (in MHz)
-     * @type {number}
+     * Radio frequency this unit uses for comms
+     * @type {string}
      * @memberOf MissionSlotGroup
      */
     @Attribute({
-        type: DataTypes.DOUBLE,
+        type: DataTypes.STRING,
         allowNull: true,
-        validate: {
-            min: 0
-        }
+        defaultValue: null
     })
-    public radioFrequency: number | null;
+    public radioFrequency: string | null;
 
     /**
      * Tactical symbol
@@ -127,8 +128,9 @@ export class MissionSlotGroup extends Model {
      */
     @Attribute({
         type: DataTypes.ENUM,
-        values: ['inf'],
-        allowNull: true
+        values: tacticalSymbols,
+        allowNull: true,
+        defaultValue: null
     })
     public tacticalSymbol: string | null;
 
@@ -139,7 +141,8 @@ export class MissionSlotGroup extends Model {
      */
     @Attribute({
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
+        defaultValue: null
     })
     public vehicle: string | null;
 
@@ -345,7 +348,7 @@ export interface IPublicMissionSlotGroup {
     parentGroupUid: string | null;
     missionUid: string;
     title: string;
-    radioFrequency: number | null;
+    radioFrequency: string | null;
     tacticalSymbol: string | null;
     vehicle: string | null;
     minSlottedPlayerCount: number;

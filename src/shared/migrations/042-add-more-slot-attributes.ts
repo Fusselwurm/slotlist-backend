@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 
 /**
- * Adds the requiredDLCs column to the MissionSlots table
+ * Adds optional minSlottedPlayerCount to slots
  */
 module.exports = {
     up: async (queryInterface: any): Promise<void> => {

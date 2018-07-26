@@ -573,7 +573,7 @@ export interface IPublicMissionSlot {
 export interface IMissionSlotCreatePayload {
     slotGroupUid: string;
     title: string;
-    minSlottedPlayerCount?: number;
+    minSlottedPlayerCount: number;
     orderNumber: number;
     difficulty: number;
     detailedDescription: string | null;

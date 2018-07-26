@@ -1,22 +1,26 @@
 import { DataTypes } from 'sequelize';
+import {tacticalSymbols} from '../types/tacticalSymbol';
 
 /**
- * Adds the requiredDLCs column to the MissionSlots table
+ * Adds optional radioFrequency, tacticalSymbol, vehicle, minSlottedPlayerCount attributes to MissionSlotGroup
  */
 module.exports = {
     up: async (queryInterface: any): Promise<void> => {
         await queryInterface.addColumn('missionSlotGroups', 'radioFrequency', {
-            type: DataTypes.DOUBLE,
-            allowNull: true
+            type: DataTypes.STRING,
+            allowNull: true,
+            defaultValue: null
         });
         await queryInterface.addColumn('missionSlotGroups', 'tacticalSymbol', {
             type: DataTypes.ENUM,
-            values: ['inf'],
-            allowNull: true
+            values: tacticalSymbols,
+            allowNull: true,
+            defaultValue: null
         });
         await queryInterface.addColumn('missionSlotGroups', 'vehicle', {
             type: DataTypes.STRING,
-            allowNull: true
+            allowNull: true,
+            defaultValue: null
         });
         await queryInterface.addColumn('missionSlotGroups', 'minSlottedPlayerCount', {
             type: DataTypes.INTEGER,
