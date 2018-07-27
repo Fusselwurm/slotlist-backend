@@ -10,7 +10,7 @@ import { missionSlotSchema } from '../../../shared/schemas/missionSlot';
 import { missionSlotGroupSchema } from '../../../shared/schemas/missionSlotGroup';
 import { missionSlotRegistrationSchema } from '../../../shared/schemas/missionSlotRegistration';
 import { permissionSchema } from '../../../shared/schemas/permission';
-import {TacticalSymbol, tacticalSymbols} from '../../../shared/types/tacticalSymbol';
+import {TACTICAL_SYMBOL, tacticalSymbols} from '../../../shared/types/tacticalSymbol';
 import * as controller from '../../controllers/v1/mission';
 
 /**
@@ -1149,7 +1149,7 @@ export const mission = [
                     description: Joi.string().allow(null).min(1).default(null).required().description('Optional description of the mission slot group, explaining ' +
                         'the slot group\'s role or callsign').example('Leads the mission, callsign "Luchs"'),
                     radioFrequency: Joi.string().optional().max(255).default(null).description('Radio frequency or channel the group uses').example('52.3 MHz'),
-                    tacticalSymbol: Joi.string().allow(tacticalSymbols).optional().default(null).description('tactical symbol').example(TacticalSymbol.mech_inf),
+                    tacticalSymbol: Joi.string().allow(tacticalSymbols).optional().default(null).description('tactical symbol').example(TACTICAL_SYMBOL.mech_inf),
                     vehicle: Joi.string().max(64).optional().default(null).description('Vehicle the group uses').example('BTR-70'),
                     minSlottedPlayerCount: Joi.number()
                         .positive().allow(0).integer().optional().default(0)

@@ -1,6 +1,6 @@
 import * as Joi from 'joi';
 
-import {TacticalSymbol, tacticalSymbols} from '../types/tacticalSymbol';
+import {TACTICAL_SYMBOL, tacticalSymbols} from '../types/tacticalSymbol';
 import { missionSlotSchema } from './missionSlot';
 
 /**
@@ -14,7 +14,7 @@ export const missionSlotGroupSchema = Joi.object().keys({
     description: Joi.string().allow(null).min(1).default(null).optional().description('Optional description of the mission slot group, providing details about the group')
         .example('Spearhead of the operation, contains the most awesome people'),
     radioFrequency: Joi.string().optional().max(255).default(null).description('Radio frequency or channel the group uses').example('52.3 MHz'),
-    tacticalSymbol: Joi.string().allow(tacticalSymbols).optional().default(null).description('tactical symbol').example(TacticalSymbol.mech_inf),
+    tacticalSymbol: Joi.string().allow(tacticalSymbols).optional().default(null).description('tactical symbol').example(TACTICAL_SYMBOL.mech_inf),
     vehicle: Joi.string().max(64).optional().default(null).description('Vehicle the group uses').example('BTR-70'),
     minSlottedPlayerCount: Joi.number()
         .positive().allow(0).integer().optional().default(0)
