@@ -6,13 +6,14 @@ import {
     HasMany,
     HasManyCreateAssociationMixin,
     HasManyGetAssociationsMixin,
-    HasManyRemoveAssociationMixin,
+    HasManyRemoveAssociationMixin, HasOne,
     Model
 } from 'sequelize';
 import { Attribute, Options } from 'sequelize-decorators';
 
 import sequelize from '../util/sequelize';
 
+import {tacticalSymbols} from '../types/tacticalSymbol';
 import { Mission } from './Mission';
 import { IPublicMissionSlot, MissionSlot } from './MissionSlot';
 
@@ -36,13 +37,15 @@ export class MissionSlotGroup extends Model {
      * @static
      * @type {{
      *         mission: BelongsTo,
-     *         slots: HasMany
+     *         slots: HasMany,
+     *         parentGroup: HasOne
      *     }}
      * @memberof MissionSlotGroup
      */
     public static associations: {
         mission: BelongsTo;
         slots: HasMany;
+        parentGroup: HasOne;
     };
 
     //////////////////////
@@ -64,6 +67,34 @@ export class MissionSlotGroup extends Model {
     public uid: string;
 
     /**
+     * Eager-loaded parent group instance.
+     * Only included if it has been eager-loaded via sequelize
+     *
+     * @type {(MissionSlotGroup | undefined)}
+     * @memberof MissionSlotGroup
+     */
+    public parentGroup?: MissionSlotGroup;
+
+    /**
+     * UID of the parent slotGroup
+     *
+     * @type {string}
+     * @memberof MissionSlotGroup
+     */
+    @Attribute({
+        type: DataTypes.UUID,
+        allowNull: true,
+        defaultValue: null,
+        references: {
+            model: MissionSlotGroup,
+            key: 'uid'
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+    })
+    public parentGroupUid: string | null;
+
+    /**
      * Title of the mission slot group
      *
      * @type {string}
@@ -77,6 +108,55 @@ export class MissionSlotGroup extends Model {
         }
     })
     public title: string;
+
+    /**
+     * Radio frequency this unit uses for comms
+     * @type {string}
+     * @memberOf MissionSlotGroup
+     */
+    @Attribute({
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: null
+    })
+    public radioFrequency: string | null;
+
+    /**
+     * Tactical symbol
+     * @type {string}
+     * @memberOf MissionSlotGroup
+     */
+    @Attribute({
+        type: DataTypes.ENUM,
+        values: tacticalSymbols,
+        allowNull: true,
+        defaultValue: null
+    })
+    public tacticalSymbol: string | null;
+
+    /**
+     * Vehicle (if any)
+     * @type {string}
+     * @memberOf MissionSlotGroup
+     */
+    @Attribute({
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: null
+    })
+    public vehicle: string | null;
+
+    /**
+     * Minimum number of assigned slots for this unit to be open for slotting.
+     * @type {number}
+     * @memberOf MissionSlotGroup
+     */
+    @Attribute({
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0
+    })
+    public minSlottedPlayerCount: number;
 
     /**
      * Order number for sorting group in slotlist
@@ -239,8 +319,13 @@ export class MissionSlotGroup extends Model {
 
         return {
             uid: this.uid,
+            parentGroupUid: this.parentGroupUid,
             missionUid: this.missionUid,
             title: this.title,
+            radioFrequency: this.radioFrequency,
+            tacticalSymbol: this.tacticalSymbol,
+            vehicle: this.vehicle,
+            minSlottedPlayerCount: this.minSlottedPlayerCount,
             orderNumber: this.orderNumber,
             description: _.isNil(this.description) ? null : this.description,
             slots: _.orderBy(publicSlots, ['orderNumber', (s: IPublicMissionSlot) => { return s.title.toUpperCase(); }], ['asc', 'asc'])
@@ -260,8 +345,13 @@ export class MissionSlotGroup extends Model {
  */
 export interface IPublicMissionSlotGroup {
     uid: string;
+    parentGroupUid: string | null;
     missionUid: string;
     title: string;
+    radioFrequency: string | null;
+    tacticalSymbol: string | null;
+    vehicle: string | null;
+    minSlottedPlayerCount: number;
     orderNumber: number;
     description: string | null;
     slots: IPublicMissionSlot[];

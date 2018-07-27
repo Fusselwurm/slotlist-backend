@@ -10,6 +10,7 @@ import { missionSlotSchema } from '../../../shared/schemas/missionSlot';
 import { missionSlotGroupSchema } from '../../../shared/schemas/missionSlotGroup';
 import { missionSlotRegistrationSchema } from '../../../shared/schemas/missionSlotRegistration';
 import { permissionSchema } from '../../../shared/schemas/permission';
+import {TACTICAL_SYMBOL, tacticalSymbols} from '../../../shared/types/tacticalSymbol';
 import * as controller from '../../controllers/v1/mission';
 
 /**
@@ -1147,6 +1148,12 @@ export const mission = [
                     title: Joi.string().min(1).max(255).required().description('Title of the slot group').example('Platoon Luchs'),
                     description: Joi.string().allow(null).min(1).default(null).required().description('Optional description of the mission slot group, explaining ' +
                         'the slot group\'s role or callsign').example('Leads the mission, callsign "Luchs"'),
+                    radioFrequency: Joi.string().optional().max(255).default(null).description('Radio frequency or channel the group uses').example('52.3 MHz'),
+                    tacticalSymbol: Joi.string().allow(tacticalSymbols).optional().default(null).description('tactical symbol').example(TACTICAL_SYMBOL.mech_inf),
+                    vehicle: Joi.string().max(64).optional().default(null).description('Vehicle the group uses').example('BTR-70'),
+                    minSlottedPlayerCount: Joi.number()
+                        .positive().allow(0).integer().optional().default(0)
+                        .description('Lock slots of this group until at least N players have slotted into the mission').example(12),
                     insertAfter: Joi.number().integer().positive().allow(0).default(0).required().description('Order number of slot group the new group should be inserted ' +
                         'after. The order number created will be incremented by one and all higher order numbers adapted accordingly').example(9)
                 }).required()
@@ -1466,6 +1473,9 @@ export const mission = [
                 }),
                 payload: Joi.object().required().keys({
                     title: Joi.string().min(1).max(255).optional().description('New title of the slot').example('Platoon Lead'),
+                    minSlottedPlayerCount: Joi.number()
+                        .positive().allow(0).integer().optional().default(0)
+                        .description('Lock slot until at least N players have slotted into the mission').example(12),
                     difficulty: Joi.number().integer().positive().allow(0).min(0).max(4).optional().description('New difficulity of the slot, ranging from 0 (easiest) ' +
                         'to 4 (hardest)').example(4),
                     description: Joi.string().allow(null).min(1).optional().description('New optional short description of the slot')

@@ -12,6 +12,9 @@ export const missionSlotSchema = Joi.object().keys({
     uid: Joi.string().guid().length(36).required().description('UID of the slot').example('e3af45b2-2ef8-4ece-bbcc-13e70f2b68a8'),
     slotGroupUid: Joi.string().guid().length(36).required().description('UID of the slot\'s slot group').example('e3af45b2-2ef8-4ece-bbcc-13e70f2b68a8'),
     title: Joi.string().min(1).max(255).required().description('Title of the slot').example('Platoon Lead'),
+    minSlottedPlayerCount: Joi.number()
+        .positive().allow(0).integer().optional().default(0)
+        .description('Lock slot until at least N players have slotted into the mission').example(12),
     orderNumber: Joi.number().integer().positive().allow(0).min(0).required().description('Order number for sorting slotlist').example(0),
     difficulty: Joi.number().integer().positive().allow(0).min(0).max(4).required().description('Difficulity of the slot, ranging from 0 (easiest) to 4 (hardest)').example(4),
     detailedDescription: Joi.string().allow(null).min(1).default(null).optional().description('Detailed, optional description of the mission slot, further explaining ' +
