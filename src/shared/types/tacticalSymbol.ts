@@ -1,5 +1,5 @@
 /**
- * represents allowed NATO tactical symbols
+ * represents allowed NATO tactical symbols. see https://community.bistudio.com/wiki/Military_Symbols
  */
 export enum TacticalSymbol {
     inf = 'inf',
